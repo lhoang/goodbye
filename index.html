@@ -7,7 +7,7 @@
 
     </style>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="timeline.js"></script>
+    <script src="goodbye.js"></script>
     <link href="goodbye.css" rel="stylesheet" type="text/css" />
 </head>
 
@@ -15,6 +15,13 @@
 <h1>Goodbye</h1>
 <div id="story"></div>
 <script>
+    const main = new Goodbye();
+    main.init().then(() => {
+        const result = main.getYear({year: 2011});
+        const populated = main.spawnChildren(result.data);
+
+        console.log(populated);
+    });
 
 </script>
 </body>
