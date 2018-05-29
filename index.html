@@ -3,12 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <style>
-
-    </style>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="goodbye.js"></script>
-    <link href="goodbye.css" rel="stylesheet" type="text/css" />
+    <link href="goodbye.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
@@ -16,6 +13,11 @@
 <div id="story"></div>
 <script>
     const main = new Goodbye();
+
+    function cleanName(str) {
+        return str.replace(/[^A-Z0-9]+/ig, "-");
+    }
+
     main.init().then(() => {
         const result = main.getYear({year: 2011});
         const populated = main.spawnChildren(result.data);
@@ -27,109 +29,84 @@
         let width = 960,
             height = 500,
             padding = 1.5, // separation between same-color circles
-            clusterPadding = 6, // separation between different-color circles
-            maxRadius = 12;
+            clusterPadding = 6; // separation between different-color circles
+        //maxRadius = 12;
 
         let n = 200, // total number of nodes
             m = 10, // number of distinct clusters
+            diameter = 450,
+            maxRadius = 1,
             clusters = new Array(m);
 
         const color = d3.scaleOrdinal(d3.schemeCategory10)
             .domain(d3.range(m));
 
 
-        let nodesOriginal = d3.range(n).map(() => {
-            let i = Math.floor(Math.random() * m),
-                radius = Math.sqrt((i + 1) / m * -Math.log(Math.random())) * maxRadius,
-                d = {cluster: i, r: radius};
-            if (!clusters[i] || (radius > clusters[i].r)) {
-                clusters[i] = d;
-            }
-            return d;
-        });
-
-        let nodes =
-
-        let svg = d3.select('body')
+        const svg = d3.select('body')
             .append('svg')
             .attr('height', height)
-            .attr('width', width)
-            .append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+            .attr('width', width);
 
-        let circles = svg.append('g')
-            .datum(nodes)
-            .selectAll('.circle')
-            .data(d => d)
-            .enter().append('circle')
-            .attr('r', (d) => d.r)
-            .attr('fill', (d) => color(d.cluster))
-            .attr('stroke', 'black')
-            .attr('stroke-width', 1);
+        // const g = svg.append('g').attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+        const g = svg.append('g').attr('transform', 'translate(2,2)')
 
-        let simulation = d3.forceSimulation(nodes)
-            .velocityDecay(0.2)
-            .force("x", d3.forceX().strength(.0005))
-            .force("y", d3.forceY().strength(.0005))
-            .force("collide", collide)
-            .force("cluster", clustering)
-            .on("tick", ticked);
 
-        function ticked() {
-            circles
-                .attr('cx', (d) => d.x)
-                .attr('cy', (d) => d.y);
-        }
+        var pack = d3.pack()
+            .size([diameter - 4, diameter - 4]);
 
-// These are implementations of the custom forces.
-        function clustering(alpha) {
-            nodes.forEach(function(d) {
-                const cluster = clusters[d.cluster];
-                if (cluster === d) return;
-                let x = d.x - cluster.x,
-                    y = d.y - cluster.y,
-                    l = Math.sqrt(x * x + y * y),
-                    r = d.r + cluster.r;
-                if (l !== r) {
-                    l = (l - r) / l * alpha;
-                    d.x -= x *= l;
-                    d.y -= y *= l;
-                    cluster.x += x;
-                    cluster.y += y;
-                }
+
+        const root = d3.hierarchy(populated)
+        // .sum(d => maxRadius - (Math.random() * maxRadius / 2))
+            .sum(d => d.size ? d.size : (maxRadius - (Math.random() * maxRadius / 2)))
+            .sort(function (a, b) {
+                return b.value - a.value;
             });
-        }
 
-        function collide(alpha) {
-            const quadtree = d3.quadtree()
-                .x((d) => d.x)
-                .y((d) => d.y)
-                .addAll(nodes);
+        console.log(root);
+        console.log(pack(root).descendants());
 
-            nodes.forEach(function(d) {
-                const r = d.r + maxRadius + Math.max(padding, clusterPadding),
-                    nx1 = d.x - r,
-                    nx2 = d.x + r,
-                    ny1 = d.y - r,
-                    ny2 = d.y + r;
-                quadtree.visit(function(quad, x1, y1, x2, y2) {
-
-                    if (quad.data && (quad.data !== d)) {
-                        let x = d.x - quad.data.x,
-                            y = d.y - quad.data.y,
-                            l = Math.sqrt(x * x + y * y),
-                            r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding);
-                        if (l < r) {
-                            l = (l - r) / l * alpha;
-                            d.x -= x *= l;
-                            d.y -= y *= l;
-                            quad.data.x += x;
-                            quad.data.y += y;
-                        }
-                    }
-                    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-                });
+        const nodes = g.selectAll('.node')
+            .data(pack(root).descendants())
+            .enter().append('g')
+            .attr('class', function (d) {
+                return d.children ? 'node' : 'leaf node';
+            })
+            .attr('data-name', d => cleanName(d.data.name))
+            .attr('transform', function (d) {
+                return 'translate(' + d.x + ',' + d.y + ')';
             });
-        }
+
+        // Element root
+        nodes.filter(d => d.depth === 0)
+            .classed('root', true);
+
+        // Element principal
+        nodes.filter(d => d.depth === 1 && d.height === 0)
+            .classed('center-elt', true);
+
+        // Elements spawn
+        nodes.filter(d => d.data.name === 'spawn')
+            .classed('spawn', true);
+
+
+        nodes.append('circle')
+            .attr('r', function (d) {
+                return d.r;
+            });
+
+
+        // en dernier pour être au dessus
+        const labels = svg.append('g').classed('labels', true);
+        labels.selectAll('.label')
+            .data(pack(root).descendants())
+            .enter()
+            .filter(d => d.data.name !== 'spawn')
+            .append('text')
+            .classed('label', true)
+            .attr('data-name', d => cleanName(d.data.name))
+            .attr('x', d => d.x)
+            .attr('y', d => d.y)
+            .text(d => d.data.name);
 
 
     });

@@ -3,9 +3,12 @@
     {
       "year": 2011,
       "data": {
-        "name": "me",
-        "size": 10,
+        "name": "root",
         "children": [
+          {
+            "name": "Lang",
+            "size": 2
+          },
           {
             "name": "SNT",
             "children": [
