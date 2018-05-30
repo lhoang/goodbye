@@ -16,7 +16,8 @@ circle {
 }
 
 text {
-    font: 10px sans-serif;
+    font: 15px sans-serif;
+    font-weight: bold;
     text-anchor: middle;
 }
 

@@ -15,7 +15,7 @@
     const main = new Goodbye();
 
     function cleanName(str) {
-        return str.replace(/[^A-Z0-9]+/ig, "-");
+        return str.replace(/[^A-Z0-9]+/ig, '-');
     }
 
     main.init().then(() => {
@@ -72,9 +72,10 @@
                 return d.children ? 'node' : 'leaf node';
             })
             .attr('data-name', d => cleanName(d.data.name))
-            .attr('transform', function (d) {
-                return 'translate(' + d.x + ',' + d.y + ')';
-            });
+            // .attr('transform', function (d) {
+            //     return 'translate(' + d.x + ',' + d.y + ')';
+            // })
+        ;
 
         // Element root
         nodes.filter(d => d.depth === 0)
@@ -90,23 +91,62 @@
 
 
         nodes.append('circle')
-            .attr('r', function (d) {
-                return d.r;
-            });
+            .attr('r', d => d.r)
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y);
+
+
+        function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+            const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+            return {
+                x: centerX + (radius * Math.cos(angleInRadians)),
+                y: centerY + (radius * Math.sin(angleInRadians)),
+            };
+        }
+
+
+        function describeArc(x, y, radius, startAngle, endAngle) {
+            const start = polarToCartesian(x, y, radius, endAngle);
+            const end = polarToCartesian(x, y, radius, startAngle);
+            return [
+                'M', start.x, start.y,
+                'A', radius, radius, 0, 1, 1, end.x, end.y,
+            ].join(' ');
+        }
+
 
 
         // en dernier pour être au dessus
-        const labels = svg.append('g').classed('labels', true);
-        labels.selectAll('.label')
+        const labels = svg.append('g').classed('labels', true)
+            .selectAll('.label')
             .data(pack(root).descendants())
             .enter()
-            .filter(d => d.data.name !== 'spawn')
-            .append('text')
-            .classed('label', true)
-            .attr('data-name', d => cleanName(d.data.name))
-            .attr('x', d => d.x)
-            .attr('y', d => d.y)
+            .filter(d => d.data.name !== 'spawn'
+            && d.data.name !== 'root');
+            // .append('text')
+            // .classed('label', true)
+            // .attr('data-name', d => cleanName(d.data.name))
+            // .attr('x', d => d.x)
+            // .attr('y', d => d.y)
+            // .text(d => d.data.name);
+
+        const arcs = labels.append('path')
+            .attr('fill', 'none')
+            .attr('id', (d, i) => 's' + i)
+            .attr('d', (d, i) => describeArc(d.x, d.y, d.r, 160, -160));
+
+        const arcPaths = labels.append('g')
+            .style('fill', 'navy');
+        arcPaths.append('text')
+            .style('text-anchor', 'middle')
+            .append('textPath')
+            .attr('xlink:href', (d, i) => '#s' + i)
+            .attr('startOffset', '10%')
+            .attr('side', 'right')
             .text(d => d.data.name);
+
+
+
 
 
     });
