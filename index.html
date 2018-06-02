@@ -10,11 +10,22 @@
 
 <body>
 <h1>Goodbye</h1>
-<div id="story"></div>
+<div id="story">
+    <button id="bck"><=</button>
+    <button id="fwd">=></button>
+</div>
+<div id="graph"></div>
 <script>
     const main = new Goodbye();
     main.init();
-
+    const fwdButton = document.querySelector('#fwd');
+    fwdButton.addEventListener('click', () => {
+        main.updateGraph(2010);
+    });
+    const bckButton = document.querySelector('#bck');
+    bckButton.addEventListener('click', () => {
+        main.updateGraph(2011);
+    });
 </script>
 </body>
 

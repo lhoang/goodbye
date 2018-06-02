@@ -5,12 +5,12 @@ circle {
     stroke-width: 1px;
 }
 
-.node.root circle {
+circle.node.root {
     stroke: none;
     fill: none;
 }
 
-.leaf circle {
+circle.leaf {
     fill: #ff7f0e;
     fill-opacity: 1;
 }
