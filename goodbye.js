@@ -159,12 +159,11 @@ class Goodbye {
             const filteredData = data.filter(d =>
                 !d.data.spawned
                 && d.data.name !== 'root');
-            console.log(filteredData);
 
             // Join
             const labels = container
                 .selectAll('.label')
-                .data(filteredData, d => {d.r, d.x, d.y}) ;
+                .data(filteredData, d => d.data.name) ;
 
             // Exit
             labels.exit()
@@ -172,7 +171,9 @@ class Goodbye {
                 .style('fill-opacity', 1e-6).remove();
 
             // Update
-            labels.selectAll('.label-path')
+            const labelPaths = labels.selectAll('.label-path')
+                .data(filteredData, d => d.data.name)
+                .transition(t)
                 .attr('d', d => describeArc(d.x, d.y, d.r, 160, -160))
             ;
 
@@ -185,6 +186,8 @@ class Goodbye {
                 .classed('label-path', true)
                 .attr('fill', 'none')
                 .attr('id', d => 'path-' + cleanName(d.data.name))
+                .merge(labelPaths)
+                .transition(t)
                 .attr('d', d => describeArc(d.x, d.y, d.r, 160, -160));
             enterLabels.append('text')
                 .classed('label-text', true)
