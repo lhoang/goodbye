@@ -17,14 +17,17 @@
 <div id="graph"></div>
 <script>
     const main = new Goodbye();
-    main.init();
+    let currentYear = 2010;
+    main.init(currentYear);
     const fwdButton = document.querySelector('#fwd');
     fwdButton.addEventListener('click', () => {
-        main.updateGraph(2012);
+        currentYear++;
+        main.updateGraph(currentYear);
     });
     const bckButton = document.querySelector('#bck');
     bckButton.addEventListener('click', () => {
-        main.updateGraph(2011);
+        currentYear--;
+        main.updateGraph(currentYear);
     });
 </script>
 </body>

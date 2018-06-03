@@ -2,12 +2,10 @@ class Goodbye {
     constructor() {
     }
 
-    init() {
+    init(year) {
         d3.json('history.json')
-            .then((data) => {
-                this._data = data;
-            })
-            .then(() => this.drawFirstGraph());
+            .then((data) => this._data = data)
+            .then(() => this.drawFirstGraph(year));
     }
 
     getYear({year}) {
@@ -48,7 +46,7 @@ class Goodbye {
     /**
      * Création du SVG.
      */
-    drawFirstGraph() {
+    drawFirstGraph(year) {
         let width = 960,
             height = 500;
 
@@ -72,6 +70,10 @@ class Goodbye {
         const t = d3.transition().duration(2000);
 
         const result = this.getYear({year: year});
+        if (!result) {
+            console.warn('no data found.');
+            return;
+        }
         const populated = this.spawnChildren(result.data, 0);
 
         const root = d3.hierarchy(populated)
@@ -174,7 +176,7 @@ class Goodbye {
             const labelPaths = labels.selectAll('.label-path')
                 .data(filteredData, d => d.data.name)
                 .transition(t)
-                .attr('d', d => describeArc(d.x, d.y, d.r, 160, -160))
+                .attr('d', d => describeArc(d.x, d.y, d.r, 180, 0))
             ;
 
             // Enter
@@ -188,13 +190,13 @@ class Goodbye {
                 .attr('id', d => 'path-' + cleanName(d.data.name))
                 .merge(labelPaths)
                 .transition(t)
-                .attr('d', d => describeArc(d.x, d.y, d.r, 160, -160));
+                .attr('d', d => describeArc(d.x, d.y, d.r, 180, 0));
             enterLabels.append('text')
                 .classed('label-text', true)
-                .style('text-anchor', 'middle')
+                .style('text-anchor', 'start')
                 .append('textPath')
                 .attr('xlink:href', d => '#path-' + cleanName(d.data.name))
-                .attr('startOffset', '10%')
+                .attr('startOffset', '0%')
                 .attr('side', 'right')
                 .text(d => d.data.name)
                 .style('fill-opacity', 1e-6)
