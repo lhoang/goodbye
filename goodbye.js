@@ -85,13 +85,30 @@ class Goodbye {
 
         // console.log(root);
         // console.log(pack(root));
-        //console.log(pack(root).descendants());
+        // console.log(pack(root).descendants());
 
         function cleanName(str) {
             return str.replace(/[^A-Z0-9]+/ig, '-');
         }
 
         const svg = d3.select('#graph').select('svg');
+
+        function buildClassNames(d) {
+            let name = 'node';
+            if (!d.children) {
+                name += ' leaf';
+            }
+            if (d.data.name === 'RATP') {
+                name += ' root';
+            }
+            if (d.data.name === 'Lang') {
+                name += ' center-elt';
+            }
+            if (d.data.name.startsWith('RATP-spawn')) {
+                name += ' ratp-spawn';
+            }
+            return name;
+        }
 
 
         /**
@@ -103,19 +120,20 @@ class Goodbye {
                 .data(data, d => d.data.name);
 
             // Exit
-            nodes.exit().transition(t)
+            const exitNodes = nodes.exit();
+
+            // console.log(exitNodes.data());
+            exitNodes.transition(t)
                 .style('stroke-opacity', 1e-2)
-                .style('fill-opacity', 1e-2)
-                .remove();
+                .style('fill-opacity', 1e-2).remove();
 
             // Update
             nodes.transition(t)
                 .attr('r', d => d.r)
                 .attr('cx', d => d.x)
                 .attr('cy', d => d.y)
-                .attr('class', d => d.children ? 'node' : 'leaf node')
+                .attr('class', d => buildClassNames(d))
                 .attr('data-name', d => cleanName(d.data.name));
-
 
             // Enter
             nodes.enter()
@@ -123,19 +141,12 @@ class Goodbye {
                 .attr('r', 0)
                 .attr('cx', d => d.x)
                 .attr('cy', d => d.y)
-                .attr('class', d => d.children ? 'node' : 'leaf node')
+                .attr('class', d => buildClassNames(d))
                 .attr('data-name', d => cleanName(d.data.name))
                 .transition(t)
                 .attr('r', d => d.r);
 
 
-            // Element root
-            nodes.filter(d => d.depth === 0)
-                .classed('root', true);
-
-            // Element principal
-            nodes.filter(d => d.depth === 1 && d.height === 0)
-                .classed('center-elt', true);
         }
 
 
@@ -160,12 +171,12 @@ class Goodbye {
 
             const filteredData = data.filter(d =>
                 !d.data.spawned
-                && d.data.name !== 'root');
+                && d.data.name !== 'RATP');
 
             // Join
             const labels = container
                 .selectAll('.label')
-                .data(filteredData, d => d.data.name) ;
+                .data(filteredData, d => d.data.name);
 
             // Exit
             labels.exit()

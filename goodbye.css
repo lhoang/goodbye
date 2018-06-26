@@ -10,10 +10,19 @@ circle.node.root {
     fill: none;
 }
 
+circle.leaf.center-elt {
+    fill: red;
+}
+
 circle.leaf {
     fill: #ff7f0e;
     fill-opacity: 1;
 }
+
+circle.ratp-spawn {
+    fill: lightgray;
+}
+
 
 text {
     font: 15px sans-serif;
@@ -23,4 +32,8 @@ text {
 
 .node.spawn text {
     fill: none;
+}
+
+.node.old {
+    fill: lightgray;
 }
