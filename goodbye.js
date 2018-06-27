@@ -47,7 +47,7 @@ class Goodbye {
      * Création du SVG.
      */
     drawFirstGraph(year) {
-        let width = 960,
+        let width = 500,
             height = 500;
 
         const svg = d3.select('#graph')

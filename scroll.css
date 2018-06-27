@@ -1,0 +1,32 @@
+#container{
+    position: relative;
+}
+#sections{
+    width: 30rem;
+}
+.trigger {
+    background: white;
+    opacity: .2;
+    margin-bottom: 200px;
+    height: 300px;
+}
+#sections > .trigger:last-child{
+    margin-bottom: 30px;
+}
+#sections > div.graph-scroll-active{
+    opacity: 1;
+}
+#graph{
+    width: 500px;
+    position: sticky;
+    top: 0;
+    margin-left: 30rem;
+    transform: translate3d(0, 0, 0);
+    height: 500px;
+}
+#graph svg {
+    border: 1px dashed black;
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
+}

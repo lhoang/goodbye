@@ -5,30 +5,66 @@
     <meta charset="utf-8">
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="goodbye.js"></script>
+    <link href="scroll.css" rel="stylesheet" type="text/css"/>
     <link href="goodbye.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
-<h1>Goodbye</h1>
-<div id="story">
-    <button id="bck"><=</button>
-    <button id="fwd">=></button>
+<div id='container'>
+    <div id="graph"></div>
+    <div id='sections'>
+        <div class="trigger">
+            <h3>2011 : Arrivée à la Régie</h3>
+        </div>
+        <div class="trigger">
+            <h3>2012</h3>
+        </div>
+        <div class="trigger">
+            <h3>2013</h3>
+        </div>
+        <div class="trigger">
+            <h3>2014</h3>
+        </div>
+        <div class="trigger">
+            <h3>2015</h3>
+        </div>
+        <div class="trigger">
+            <h3>2016</h3>
+        </div>
+        <div class="trigger">
+            <h3>2017</h3>
+        </div>
+        <div class="trigger">
+            <h3>2018</h3>
+        </div>
+    </div>
 </div>
-<div id="graph"></div>
+<script src="graph-scroll.js"></script>
 <script>
-    const main = new Goodbye();
-    let currentYear = 2011;
-    main.init(currentYear);
-    const fwdButton = document.querySelector('#fwd');
-    fwdButton.addEventListener('click', () => {
-        currentYear++;
-        main.updateGraph(currentYear);
-    });
-    const bckButton = document.querySelector('#bck');
-    bckButton.addEventListener('click', () => {
-        currentYear--;
-        main.updateGraph(currentYear);
-    });
+    function graphscroll(refYear) {
+        // select elements using d3 here since this is a d3 library...
+        const graphicEl = d3.select('#container');
+        const graphicVisEl = graphicEl.select('#graph');
+        const triggerEls = graphicEl.selectAll('.trigger');
+
+        // viewport height
+        const viewportHeight = window.innerHeight;
+        const halfViewportHeight = viewportHeight / 2;
+
+        const main = new Goodbye();
+        main.init(refYear);
+
+        d3.graphScroll()
+            .container(graphicEl)
+            .graph(graphicVisEl)
+            .sections(triggerEls)
+            .offset(-100)
+            .on('active', i => {
+                main.updateGraph(refYear + i);
+            })
+    }
+
+    graphscroll(2011);
 </script>
 </body>
 
