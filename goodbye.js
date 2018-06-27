@@ -4,8 +4,12 @@ class Goodbye {
 
     init(year) {
         d3.json('history.json')
-            .then((data) => this._data = data)
+            .then( data => this._data = data)
             .then(() => this.drawFirstGraph(year));
+
+        // chargement logo
+        d3.json('coordinates.json')
+            .then( data => this._logo = data);
     }
 
     getYear({year}) {
@@ -63,6 +67,10 @@ class Goodbye {
 
     }
 
+    /**
+     * Mise à jour du graph.
+     * @param year nouvelle année
+     */
     updateGraph(year) {
         const diameter = 450;
         const maxRadius = 1;
@@ -219,5 +227,23 @@ class Goodbye {
         updateLabels(pack(root).descendants(), svg.select('.labels'));
     }
 
+    /**
+     * Dessin du logo RATP avec 250 points.
+     */
+    drawLogo() {
+        const svg = d3.select('#graph').select('svg');
+        //transition
+        const t = d3.transition().duration(2000);
+
+        svg.selectAll('circle')
+            .transition(t)
+            .attr('r', 4)
+            .attr('cx', (d, i) => this._logo[i][0])
+            .attr('cy', (d, i) => this._logo[i][1]);
+
+        svg.selectAll('.label textPath')
+            .transition(t)
+            .style('fill-opacity', 1e-6);
+    }
 
 }
