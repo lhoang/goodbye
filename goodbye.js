@@ -52,7 +52,7 @@ class Goodbye {
      */
     drawFirstGraph(year) {
         let width = 500,
-            height = 500;
+            height = 520;
 
         const svg = d3.select('#graph')
             .append('svg')
