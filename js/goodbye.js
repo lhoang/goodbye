@@ -2,13 +2,19 @@ class Goodbye {
     constructor() {
     }
 
+    /**
+     * Initialisation :
+     * Récupération des données et du logo.
+     * Affichage du premier graph
+     * @param year année du premier graph
+     */
     init(year) {
-        d3.json('history.json')
+        d3.json('data/history.json')
             .then( data => this._data = data)
             .then(() => this.drawFirstGraph(year));
 
         // chargement logo
-        d3.json('coordinates.json')
+        d3.json('data/coordinates.json')
             .then( data => this._logo = data);
     }
 
@@ -158,6 +164,11 @@ class Goodbye {
         }
 
 
+        /**
+         * MAJ des labels.
+         * @param data
+         * @param container
+         */
         function updateLabels(data, container) {
             function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
                 const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
