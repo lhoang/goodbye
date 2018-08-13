@@ -3,33 +3,17 @@
 
 <head>
     <meta charset="utf-8">
-    <!--<script src="https://d3js.org/d3.v5.min.js"></script> -->
-    <script src="lib/d3.v5.min.js"></script>
-    <script src="goodbye.js"></script>
-    <link href="scroll.css" rel="stylesheet" type="text/css"/>
-    <link href="goodbye.css" rel="stylesheet" type="text/css"/>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="js/goodbye.js"></script>
+    <script src="lib/graph-scroll.js"></script>
+    <link href="css/scroll.css" rel="stylesheet" type="text/css"/>
+    <link href="css/goodbye.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
 <div class="slide">
-    <h1>Bienvenue</h1>
-</div>
-<div class="slide">
-    <ul>
-        <li>Mon Parcours</li>
-        <li>Mes Remerciements</li>
-        <li>Mes  coups de gueule</li>
-        <li>Questions?</li>
-    </ul>
-</div>
-<div class="slide">
-    <img src="assets/geoffrey.gif">
-</div>
-<div class="slide">
-    <img src="assets/saymyname.gif">
-</div>
-<div class="slide">
-    <img src="assets/serviceFrance1.gif" alt="vous démissionnez ?">
+    <h1>Goodbye RATP</h1>
+    <p>Scroll down ⇓</p>
 </div>
 <div id='container'>
     <div id="graph"></div>
@@ -63,10 +47,8 @@
         </div>
     </div>
 </div>
-<script src="graph-scroll.js"></script>
 <script>
     function graphscroll(refYear) {
-        // select elements using d3 here since this is a d3 library...
         const graphicEl = d3.select('#container');
         const graphicVisEl = graphicEl.select('#graph');
         const triggerEls = graphicEl.selectAll('.trigger');
