@@ -28,6 +28,7 @@ body {
 }
 #graph{
     width: 500px;
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     margin-left: 50vw;
